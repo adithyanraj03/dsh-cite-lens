@@ -1,0 +1,9 @@
+# dsh-cite-lens: mount the host half — the citation guide in each chat's system
+# prompt, the /cite-links command and its per-prompt reminder, and the route the
+# top-bar indicator reads. The PDF view, selection toolbar and citation links are
+# the browser half (the `dsh.client` entry in package.json).
+#
+# `name` MUST be the package name: the loader imports this exact specifier.
+- insert:
+    - id: dsh-cite-lens
+      name: 'dsh-cite-lens'

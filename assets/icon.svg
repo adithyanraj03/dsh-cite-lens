@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="dsh-cite-lens">
+  <!-- dsh-cite-lens icon source. Rasterised to assets/icon.png (512x512) with:
+         rsvg-convert -w 512 -h 512 -o assets/icon.png assets/icon.svg
+       The mark is the plugin's own in-app glyph: the chain link it draws in the
+       chat header for /cite-links (LinkIcon in src/client/chip.js — 24x24,
+       stroke 2, round caps), redrawn thick enough to read at dsh's 36px plugin
+       row and at 96px on a market tile. Duotone, in the two colours the plugin
+       paints with: the upper link in the citation-highlight amber (#facc15, the
+       0.55 alpha marker in src/client/index.js) and the lower link in the lit
+       chip's blue (#60a5fa — #4f9bfb here, so it holds up on the ink tile).
+       One solid ink tile (#12141a) so the mark reads on light and dark. -->
+  <rect width="512" height="512" rx="112" fill="#12141A"/>
+  <g transform="translate(50 50) scale(17.2)" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#FACC15" d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5"/>
+    <path stroke="#4F9BFB" d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5"/>
+  </g>
+</svg>
