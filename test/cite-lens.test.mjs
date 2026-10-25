@@ -138,6 +138,32 @@ test('the bundle registers an external-band .pdf preview with a body, using only
   assert.ok(client.exports.inject.includes('sessions') && client.exports.inject.includes('conversation'));
 });
 
+test('a named citation finds its chat on both dsh lines, and says so when there is none', () => {
+  const client = loadClient();
+  const opened = [];
+  const withChat = (snapshot, mounted) => ({
+    sessions: { list: { getSnapshot: () => snapshot } },
+    sidebarRight: { openResource: (address) => opened.push(address), ...(mounted ? { mounted: { getSnapshot: () => mounted } } : {}) },
+  });
+
+  // dsh 0.1.x: the sessions list carries the selected session.
+  assert.equal(client.exports.openPdf(withChat({ current: 's-old' }), 'main.pdf'), true);
+  assert.match(opened.at(-1), /^dsh-resource:\/\/file\/session\/s-old\/main\.pdf$/);
+
+  // dsh 0.2.x: the snapshot is { ids, byId, phase } with no selection at all —
+  // the session on screen is what a click has to resolve against.
+  assert.equal(client.exports.openPdf(withChat({ ids: [], byId: {}, phase: 'ready' }, 's-screen'), 'paper/main.pdf'), true);
+  assert.equal(opened.at(-1), 'dsh-resource://file/session/s-screen/paper/main.pdf', 'subpaths survive');
+
+  // An absolute path needs no chat at all.
+  assert.equal(client.exports.openPdf(withChat({ ids: [], byId: {}, phase: 'ready' }), 'C:/papers/main.pdf'), true);
+  assert.equal(opened.at(-1), 'dsh-resource://file/absolute/C%3A/papers/main.pdf');
+
+  // No chat anywhere: false, so the click can explain itself instead of opening nothing.
+  assert.equal(client.exports.openPdf(withChat({ ids: [], byId: {}, phase: 'ready' }), 'main.pdf'), false);
+  assert.equal(opened.length, 3);
+});
+
 /* ---- pdf.js reads text, as the text layer will ------------------------------ */
 
 /** A one-page PDF with two lines of text, built by hand. */

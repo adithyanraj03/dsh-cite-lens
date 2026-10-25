@@ -1,6 +1,6 @@
 {
   "name": "dsh-cite-lens",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cite Lens for dsh: select text in a PDF in the Files tab to quote or ask about it in the current chat, and turn the model's [main.pdf p.7 \"exact words\"] citations into links that open the PDF and highlight the passage; /cite-links makes a chat cite every claim.",
   "icon": "assets/icon.png",
   "type": "module",

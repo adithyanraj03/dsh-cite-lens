@@ -49,6 +49,19 @@ function LinkIcon(size) {
 
 const chats = new Map(); // sessionId -> { on, listeners:Set, timer, arrivedAt }
 
+/**
+ * The last chat this indicator was rendered for. The header hands every chat's
+ * top bar its session id, so this is known even when the sessions list has no
+ * selection (dsh 0.2.x) — which is one of the ways a citation can find the
+ * workspace a relative PDF path belongs to.
+ */
+let lastSeenSessionId = null;
+
+/** The most recent chat whose top bar rendered, or undefined before any chat. */
+export function lastSessionId() {
+  return lastSeenSessionId || undefined;
+}
+
 function emit(entry) {
   for (const listener of [...entry.listeners]) listener(entry);
 }
@@ -129,6 +142,7 @@ function CiteLinks({ sessionId, variant }) {
 
   useEffect(() => {
     if (!sessionId) return undefined;
+    lastSeenSessionId = String(sessionId);
     const off = subscribe(sessionId, (entry) => {
       const arriving = entry.on === true && Date.now() - entry.arrivedAt < 1400;
       setState({ on: entry.on, arriving });

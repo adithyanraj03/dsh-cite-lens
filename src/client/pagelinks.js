@@ -194,7 +194,7 @@ export async function followCitation(cite, { registry, open, notify }) {
     const requested = open(entry?.key ?? cite.file);
     if (!entry) {
       if (!requested) {
-        notify(`Couldn't open ${cite.file} — no chat is open to resolve the path`);
+        notify(`Couldn't open ${cite.file} — open a chat first, so the path can be resolved against its workspace`);
         return;
       }
       entry = await registry.waitFor(cite.file);

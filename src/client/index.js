@@ -12,7 +12,7 @@ import { selectionEnds, dragSelectionEnd, adjustByKey } from './selection.js';
 import { ACTIONS, formatQuote, insertIntoChat } from './chat.js';
 import { ViewerRegistry, installPageLinks, HIGHLIGHT } from './pagelinks.js';
 import TEXT_LAYER_CSS from '../textlayer.css';
-import { CiteLinksHeaderButton, CHIP_CSS } from './chip.js';
+import { CiteLinksHeaderButton, CHIP_CSS, lastSessionId } from './chip.js';
 
 const h = React.createElement;
 const { useEffect, useRef, useState, useCallback } = React;
@@ -120,14 +120,38 @@ export function addressFor(path, sessionId) {
   return `dsh-resource://file/session/${encodeURIComponent(sessionId)}/${enc(clean.split('/'))}`;
 }
 
+/**
+ * Which chat a relative cited path is relative to.
+ *
+ * dsh 0.1.x kept the selected session in the sessions list snapshot as
+ * `current`. 0.2.x dropped that field — the snapshot is
+ * `{ ids, byId, phase, projectionsBySession }` — and names the session on
+ * screen through `ctx.sidebarRight.mounted` instead. Reading only `current`
+ * made every named citation fail there ("no chat is open"), so try all three
+ * sources: the old field, the on-screen session, then the last chat whose top
+ * bar rendered (the header is handed its session id).
+ *
+ * @returns a session id, or undefined when no chat is known at all.
+ */
+export function currentSessionId(ctx) {
+  try {
+    const current = ctx?.sessions?.list?.getSnapshot?.()?.current;
+    const id = typeof current === 'string' ? current : current?.sessionId ?? current?.id;
+    if (id) return String(id);
+  } catch { /* the sessions service is not mounted yet */ }
+  try {
+    const mounted = ctx?.sidebarRight?.mounted?.getSnapshot?.();
+    if (mounted) return String(mounted);
+  } catch { /* 0.1.x has no mounted snapshot */ }
+  return lastSessionId();
+}
+
 /** Ask dsh to open (or reveal) a PDF in the Files tab. False when it cannot be addressed. */
 export function openPdf(ctx, fileOrAddress) {
   try {
     let address = fileOrAddress;
     if (!String(address).startsWith('dsh-resource://')) {
-      const list = ctx.sessions?.list;
-      const current = (typeof list?.getSnapshot === 'function' ? list.getSnapshot() : undefined)?.current;
-      address = addressFor(fileOrAddress, current);
+      address = addressFor(fileOrAddress, currentSessionId(ctx));
     }
     if (!address) return false;
     ctx.sidebarRight.openResource(address);
